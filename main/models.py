@@ -11,14 +11,16 @@ class Product(models.Model):
         ('fan', 'Fan'),
         ('misc', 'Miscellanous'),
     ]
-    
-    name = models.CharField()
-    price = models.IntegerField()
-    description = models.TextField()
-    thumbnail = models.URLField()
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    price = models.IntegerField(default=0)
+    description = models.TextField(max_length=20, choices=CATEGORY_CHOICES, default='update')
+    thumbnail = models.URLField(blank=True, null=True)
     category = models.CharField(choices=CATEGORY_CHOICES)
-    is_featured = models.BooleanField()
-    likes = models.IntegerField()
+    is_featured = models.BooleanField(default=False)
+    views = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
     
     def __str__(self):
         return self.name
@@ -28,5 +30,9 @@ class Product(models.Model):
         return self.likes > 100
         
     def increment_likes(self):
-        self.news_views += 1
+        self.likes += 1
+        self.save()
+
+    def increment_views(self):
+        self.views += 1
         self.save()
