@@ -31,3 +31,5 @@ def show_product(request, id):
     context = {
         'product': product
     }
+
+    return render(request, "product_detail.html", context)
