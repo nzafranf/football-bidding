@@ -37,15 +37,9 @@ def show_product(request, id):
     return render(request, "product_detail.html", context)
 
 def show_xml(request):
-    proudct_list = Product.objects.all()
-
-def show_xml(request):
      product_list = Product.objects.all()
      xml_data = serializers.serialize("xml", product_list)
      return HttpResponse(xml_data, content_type="application/xml")
-
-def show_json(request):
-    product_list = Product.objects.all()
 
 def show_json(request):
     product_list = Product.objects.all()
