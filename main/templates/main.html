@@ -15,6 +15,20 @@
   <button>+ Add Product</button>
 </a>
 
+...
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+
+<a href="?filter=all">
+    <button type="button">All Articles</button>
+</a>
+<a href="?filter=my">
+    <button type="button">My Articles</button>
+</a> 
+
 <hr>
 {% if not product_list %}
 <p>Belum ada data berita pada football product.</p>
@@ -33,7 +47,13 @@
   <br />
   {% endif %}
 
-  <p>{{ product.description|truncatewords:25 }}...</p>
+  <p>{{ product.description|truncatewords:25 }}</p>
+
+  {% if product.user %}
+    <p>Owner: {{ product.user.username }}</p>
+  {% else %}
+    <p>Owner: Anonymous</p>
+  {% endif %}
 
   <p><a href="{% url 'main:show_product' product.product_id %}"><button>Read More</button></a></p>
 </div>
