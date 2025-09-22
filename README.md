@@ -304,6 +304,122 @@ Kegaitan berjalan cukup baik, 11 12 dengan tutorial dan kelas sebelumnya, udah i
 s
 ![JSON-id](image-4.png)
 
+---
+
+# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+
+### 1. Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
+Form bawaan Django untuk autentikasi pengguna.  
+**Kelebihan**: cepat digunakan, aman (built-in), terintegrasi dengan sistem auth Django.  
+**Kekurangan**: terbatas dalam customization UI dan logic   .
+
+### 2. Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+- **Autentikasi**: memverifikasi identitas (login).  
+- **Otorisasi**: mengatur hak akses setelah terautentikasi.  
+Django: autentikasi via `django.contrib.auth`, otorisasi via `permissions` & `decorators`.
+
+### 3. Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
+- **Session**: data disimpan secara server-side, lebih aman tetapi membebani server.  
+- **Cookies**: lebih ringan, tersimpan di client (client-side), tapi rawan dimanipulasi.
+
+### 4. Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+Tidak sepenuhnya. Risiko: 
+* **XSS**: XSS (Cross Site Scripting)  vulnerability injeksi executable kode Javascript.
+* **Clear Text Storage of Sensitive Information**    
+Django mengimplementasi `CSRF token`, token yang tidak bisa digenerate sembarangan yang menandakan request yg diterima aman
+
+### 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+1. Menambahkan URL dan view untuk registrasi, login, logout.  
+
+```python
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+
+```python
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:show_main"))
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+
+    else:
+        form = AuthenticationForm(request)
+    context = {'form': form}
+    return render(request, 'login.html', context)
+```
+
+```python
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+2. Membuat akun user dengan dummy data dengan menjalankan server secara local.  
+3. Menambahkan relasi `ForeignKey(User)` pada model `Product` kemudian lakukan migration.
+
+```python
+class Product(models.Model):
+    CATEGORY_CHOICES = [
+        ('historic', 'Historic'),
+        ('exclusive', 'Exclusive'),
+        ('fan', 'Fan'),
+        ('misc', 'Miscellanous'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    product_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    price = models.IntegerField(default=0)
+    description = models.TextField(default="No description available")
+    thumbnail = models.URLField(blank=True, null=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='misc')
+    is_featured = models.BooleanField(default=False)
+    views = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
+    ...
+```
+
+4. Mengupdate template untuk menampilkan `username` dan `last_login`.  
+5. Menggunakan cookies untuk menyimpan `last_login`.
+```python
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+```
+
+```python
+context = {
+        'npm' : '2406402542',
+        'name': request.user.username,
+        'class': 'PBP F',
+        'product_list': product_list,
+        'last_login': request.COOKIES.get('last_login', 'Never')
+    }
+
+    return render(request, "main.html", context)
+```
+
+
  **\[Naufal Zafran Fadil] - \[2406402542]**
 
 ```
