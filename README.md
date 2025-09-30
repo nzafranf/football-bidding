@@ -421,5 +421,3 @@ context = {
 
 
  **\[Naufal Zafran Fadil] - \[2406402542]**
-
-```
