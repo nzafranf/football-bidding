@@ -419,7 +419,7 @@ context = {
     return render(request, "main.html", context)
 ```
 
-# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
 
 #### 1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
 Dalam CSS, prioritas selector ditentukan oleh **specificity** dan **aturan penting**:
@@ -454,5 +454,193 @@ Responsive design penting karena pengguna mengakses aplikasi dari berbagai devic
   border: 2px solid black;  /* garis di sekitar elemen */
   padding: 15px;        /* ruang di dalam elemen sebelum teks */
 }
+```
+
+#### 4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+**Flexbox (Flexible Box)**
+    - Satu dimensi: bekerja pada satu axis, row atau column.
+    - Ideal untuk layout seperti: navbar, toolbar, alignment horizontal/vertikal, small component layouts (card actions).
+
+- Kegunaan:
+    - Menyusun item secara fleksibel, mengatur spacing, alignment, wrapping.
+    - Mudah membuat center alignment (vertikal+horizontal) dan responsive row-to-column.
+
+Contoh singkat (CSS):
+```html
+<!-- HTML -->
+<nav class="nav">
+  <div class="brand">Brand</div>
+  <div class="menu">
+    <a>Home</a>
+    <a>Products</a>
+    <a>Profile</a>
+  </div>
+</nav>
+
+<!-- CSS -->
+.nav { display: flex; justify-content: space-between; align-items: center; }
+.menu { display: flex; gap: 16px; }
+```
+
+**Grid Layout**
+
+- Dua dimensi: bekerja pada baris dan kolom sekaligus.
+
+Co- cok untuk layout kompleks: dashboard, galeri, layout halaman utama (klasifikasi area header/content/sidebar/footer).
+
+- Kegunaan:
+
+    - Membuat grid dengan track size (fr, px, %) dan control area yang presisi.
+
+    - Menyusun card-grid responsif (ganti grid-template-columns pada breakpoint).
+
+- Contoh singkat (CSS):
+
+```html
+<!-- HTML -->
+<div class="products-grid">
+  <article>Product 1</article>
+  <article>Product 2</article>
+  <article>Product 3</article>
+  <article>Product 4</article>
+</div>
+
+<!-- CSS -->
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .products-grid { grid-template-columns: repeat(1, 1fr); }
+}
+```
+
+#### 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+
+**Langkah 1 — Persiapan environment**
+- Setup project Django + TailwindCSS (via CDN atau `django-tailwind`).
+- Buat model `Product` dengan field: `name, description, thumbnail, category, user, created_at, is_featured, views`.
+
+**Langkah 2 — Routes & Views untuk Edit & Delete**
+```python
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('product/<uuid:id>/edit', views.edit_product, name='edit_product'),
+    path('product/<uuid:id>/delete', views.delete_product, name='delete_product'),
+]
+```
+
+```python
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product
+from .forms import ProductForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def edit_product(request, id):
+    product = get_object_or_404(Product, product_id=id, user=request.user)
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('main:show_product', product.product_id)
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'edit_product.html', {'form': form, 'product': product})
+
+@login_required
+def delete_product(request, id):
+    product = get_object_or_404(Product, product_id=id, user=request.user)
+    if request.method == "POST":
+        product.delete()
+        return redirect('main:show_main')
+    return render(request, 'confirm_delete.html', {'product': product})
+```
+
+**Langkah 3 — Tambah tombol Edit & Delete pada tiap card**
+```html
+<a href="{% url 'main:edit_product' product.product_id %}" 
+   class="px-3 py-1 rounded bg-indigo-600 text-white">Edit</a>
+
+<form method="POST" action="{% url 'main:delete_product' product.product_id %}" class="inline">
+  {% csrf_token %}
+  <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white">Delete</button>
+</form>
+```
+
+**Langkah 4 — Styling & Theming**
+```css
+input, textarea, select {
+  background-color: rgba(17,24,39,0.7);
+  color: #fff;
+  border: 1px solid #374151;
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.12);
+  border-color: #34d399;
+}
+```
+
+**Langkah 5 — Responsive product list & empty state**
+```html
+{% if not product_list %}
+  <div class="text-center">
+    <img src="/static/empty.png" class="mx-auto w-48"/>
+    <p class="text-gray-400">Belum ada product yang terdaftar.</p>
+  </div>
+{% else %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for product in product_list %}
+      {% include 'card_product.html' with product=product %}
+    {% endfor %}
+  </div>
+{% endif %}
+```
+
+**Langkah 6 — Navbar responsive**
+```html
+<nav class="bg-gray-900 p-4 flex items-center justify-between">
+  <div class="text-white font-bold">Brand</div>
+  <div class="hidden md:flex gap-4">
+    <a href="/" class="text-white">Home</a>
+    <a href="/products" class="text-white">Products</a>
+  </div>
+  <button class="mobile-menu-button md:hidden text-white">☰</button>
+</nav>
+<div class="mobile-menu hidden md:hidden flex flex-col bg-gray-800 p-2">
+  <a href="/" class="text-white">Home</a>
+  <a href="/products" class="text-white">Products</a>
+</div>
+
+<script>
+const btn = document.querySelector('.mobile-menu-button');
+const menu = document.querySelector('.mobile-menu');
+btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+</script>
+```
+
+**Langkah 7 — Kustomisasi halaman auth & product pages**
+- Terapkan Tailwind: background gradasi, card shadow, button dengan hover.
+- Pastikan form field terlihat jelas di dark mode.
+
+**Langkah 8 — Testing & README**
+- Uji di resolusi mobile dan desktop.
+- Tambahkan dokumentasi di README.md (subjudul `### Tugas 4`).
+
+**Langkah 9 — Deployment / Final checklist**
+- Validasi media (thumbnail).
+- Pastikan permission edit/delete hanya untuk owner.
+- Tombol delete hanya lewat POST dengan CSRF.
 
  **\[Naufal Zafran Fadil] - \[2406402542]**
