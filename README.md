@@ -419,5 +419,40 @@ context = {
     return render(request, "main.html", context)
 ```
 
+# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+
+#### 1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+Dalam CSS, prioritas selector ditentukan oleh **specificity** dan **aturan penting**:
+1. **Inline style** (ditulis langsung di elemen HTML dengan atribut `style`) memiliki prioritas tertinggi.  
+2. **ID selector** (`#id`) lebih spesifik dibandingkan class, attribute, dan tag.  
+3. **Class selector** (`.class`), pseudo-class (`:hover`), dan attribute selector (`[type="text"]`) berada di bawah ID.  
+4. **Tag selector** (`div`, `p`, `h1`) memiliki prioritas terendah.  
+5. Jika spesifisitas sama, aturan yang ditulis **paling terakhir** dalam CSS yang dipakai.  
+6. Keyword `!important` akan menimpa aturan lain, tetapi sebaiknya digunakan dengan hati-hati.  
+
+---
+
+#### 2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web?  
+Responsive design penting karena pengguna mengakses aplikasi dari berbagai device (mobile, tablet, desktop). Dengan desain responsif, tampilan akan menyesuaikan ukuran layar sehingga lebih nyaman digunakan.  
+
+- **Contoh aplikasi yang sudah menerapkan responsive design**:  
+  - **Twitter Web** → layout berubah pada mobile, tombol lebih besar, navbar bergeser menjadi menu.  
+- **Contoh aplikasi yang belum responsif**:  
+  - Website lama forum atau blog yang tampilan desktop-nya “dipaksa” tampil di mobile → teks terlalu kecil, harus zoom in/out, navigasi sulit.  
+
+---
+
+#### 3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+- **Margin** → ruang di luar elemen (jarak antar elemen).  
+- **Border** → garis yang membungkus elemen.  
+- **Padding** → ruang antara isi elemen (content) dan border.  
+
+**Contoh implementasi CSS:**
+```css
+.card {
+  margin: 20px;         /* jarak antar elemen */
+  border: 2px solid black;  /* garis di sekitar elemen */
+  padding: 15px;        /* ruang di dalam elemen sebelum teks */
+}
 
  **\[Naufal Zafran Fadil] - \[2406402542]**

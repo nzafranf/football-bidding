@@ -7,27 +7,38 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<div class="bg-gray-50 w-full pt-16 min-h-screen">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Header Section -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Latest Football Product</h1>
-      <p class="text-gray-600">Stay updated with the latest football stories and analysis</p>
+<!-- Background: dark stadium-like gradient -->
+<div class="bg-gradient-to-b from-black via-gray-900 to-black w-full pt-16 min-h-screen text-white relative overflow-hidden">
+
+  <!-- Stadium Lights Glow Effect -->
+  <div class="absolute top-0 left-1/4 w-40 h-40 bg-fuchsia-600/20 rounded-full blur-3xl"></div>
+  <div class="absolute top-10 right-1/4 w-48 h-48 bg-fuchsia-700/20 rounded-full blur-3xl"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+
+    <!-- Hero Section -->
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-[0_0_12px_rgba(255,0,255,0.6)]">
+        ⚽ Football Bidding Arena
+      </h1>
+      <p class="text-fuchsia-200 text-lg">
+        Bid, trade, and own exclusive football merchandise with passion.
+      </p>
     </div>
 
     <!-- Filter Section -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12 bg-gray-800/70 rounded-lg border border-fuchsia-700/30 p-4 shadow-lg shadow-black/40">
       <div class="flex space-x-3 mb-4 sm:mb-0">
-        <a href="?" class="{% if request.GET.filter == 'all' or not request.GET.filter  %} bg-green-600 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white">
-          All Product
+        <a href="?" class="{% if request.GET.filter == 'all' or not request.GET.filter %} bg-fuchsia-600 text-white {% else %}bg-gray-900 text-fuchsia-200 border border-fuchsia-700{% endif %} px-4 py-2 rounded-md font-semibold transition-all hover:bg-fuchsia-500 hover:text-white shadow-md">
+          All Products
         </a>
-        <a href="?filter=my" class="{% if request.GET.filter == 'my' %} bg-green-600 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white">
-          My Product
+        <a href="?filter=my" class="{% if request.GET.filter == 'my' %} bg-fuchsia-600 text-white {% else %}bg-gray-900 text-fuchsia-200 border border-fuchsia-700{% endif %} px-4 py-2 rounded-md font-semibold transition-all hover:bg-fuchsia-500 hover:text-white shadow-md">
+          My Products
         </a>
       </div>
       {% if user.is_authenticated %}
-        <div class="text-sm text-gray-500">
+        <div class="text-sm text-fuchsia-300 italic">
           Last login: {{ last_login }}
         </div>
       {% endif %}
@@ -35,18 +46,18 @@
 
     <!-- Product Grid -->
     {% if not product_list %}
-      <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-        <div class="w-32 h-32 mx-auto mb-4">
-          <img src="{% static 'image/no-product.png' %}" alt="No product available" class="w-full h-full object-contain">
+      <div class="bg-gray-900/80 rounded-lg border border-fuchsia-700/30 p-12 text-center shadow-md shadow-black/40">
+        <div class="w-32 h-32 mx-auto mb-4 animate-pulse">
+          <img src="{% static 'image/no-product.gif' %}" alt="No product available" class="w-full h-full object-contain">
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
-        <p class="text-gray-500 mb-6">Be the first to share football product with the community.</p>
-        <a href="{% url 'main:create_product' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-          Create Product
+        <h3 class="text-xl font-bold text-white mb-2">No products yet</h3>
+        <p class="text-fuchsia-300 mb-6">Be the first to showcase exclusive football gear.</p>
+        <a href="{% url 'main:create_product' %}" class="inline-flex items-center px-5 py-3 bg-fuchsia-600 text-white rounded-md font-semibold hover:bg-fuchsia-500 transition-colors shadow-md shadow-fuchsia-900/50">
+          + Create Product
         </a>
       </div>
     {% else %}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for product in product_list %}
           {% include 'card_product.html' with product=product %}
         {% endfor %}

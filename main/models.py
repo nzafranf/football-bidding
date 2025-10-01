@@ -5,6 +5,20 @@ from django.contrib.auth.models import User
 import uuid
 from django.db import models
 
+# baut model bernama book, name charfoeld max 255, id  UUID
+# model author, bio textfield, books (menandakan many-many)
+# author one-to-one dengan user
+
+# class Book(models.Model):
+#     id = models.UUIDField()
+#     name = models.CharField(max_length=255)
+
+# class Author(models.Model):
+#     bio = models.TextField()
+#     books = models.ManyToManyField(Book)
+#     user = models.OneToOneField(User)
+    
+
 class Product(models.Model):
     CATEGORY_CHOICES = [
         ('historic', 'Historic'),
