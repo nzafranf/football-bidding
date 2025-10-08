@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import render, redirect, get_object_or_404
-from main.forms import ProductForm
+from main.forms import ProductForm, RegisterForm
 from main.models import Product
 # Create your views here.
 
@@ -86,10 +86,10 @@ def show_json_by_id(request, product_id):
        return HttpResponse(status=404)
    
 def register(request):
-    form = UserCreationForm()
+    form = RegisterForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your account has been successfully created!')
@@ -212,7 +212,7 @@ def login_ajax(request):
 
 def register_ajax(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({'success': True, 'message': 'Registration successful!'})
