@@ -643,8 +643,6 @@ btn.addEventListener('click', () => menu.classList.toggle('hidden'));
 - Pastikan permission edit/delete hanya untuk owner.
 - Tombol delete hanya lewat POST dengan CSRF.
 
- **\[Naufal Zafran Fadil] - \[2406402542]**
-
 # Tugas 6: Javascript dan AJAX
 
 ## Pertanyaan & Jawaban
@@ -684,3 +682,5 @@ btn.addEventListener('click', () => menu.classList.toggle('hidden'));
 - **Feedback**: Dapat menampilkan loading states, progress indicators, dan error messages yang lebih informatif.
 - **Modern Feel**: Memberikan pengalaman yang lebih mirip aplikasi native.
 - **Accessibility**: Perlu memastikan bahwa fitur AJAX tidak mengganggu screen readers dan keyboard navigation.
+
+ **\[Naufal Zafran Fadil] - \[2406402542]**
