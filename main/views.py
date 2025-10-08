@@ -1,5 +1,5 @@
 import datetime
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -115,6 +115,8 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': 'Logged out successfully'})
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
@@ -136,3 +138,101 @@ def delete_product(request, id):
     product = get_object_or_404(Product, pk=id)
     product.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+# AJAX Views
+@login_required(login_url='/login')
+def get_products_json(request):
+    filter_type = request.GET.get("filter", "all")
+
+    if filter_type == "all":
+        product_list = Product.objects.all()
+    else:
+        product_list = Product.objects.filter(user=request.user)
+
+    data = []
+    for product in product_list:
+        data.append({
+            'product_id': str(product.product_id),
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'is_featured': product.is_featured,
+            'views': product.views,
+            'likes': product.likes,
+            'user': product.user.username if product.user else None,
+        })
+
+    return JsonResponse(data, safe=False)
+
+@login_required(login_url='/login')
+def add_product_entry_ajax(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+            return JsonResponse({'success': True, 'message': 'Product added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required(login_url='/login')
+def edit_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Product updated successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required(login_url='/login')
+def delete_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)
+    product.delete()
+    return JsonResponse({'success': True, 'message': 'Product deleted successfully!'})
+
+def login_ajax(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = JsonResponse({'success': True, 'message': 'Login successful', 'username': user.username})
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+def register_ajax(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Registration successful!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required(login_url='/login')
+def get_product_json(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)
+    data = {
+        'product_id': str(product.product_id),
+        'name': product.name,
+        'price': product.price,
+        'description': product.description,
+        'thumbnail': product.thumbnail,
+        'category': product.category,
+        'is_featured': product.is_featured,
+        'views': product.views,
+        'likes': product.likes,
+        'user': product.user.username if product.user else None,
+    }
+    return JsonResponse(data)

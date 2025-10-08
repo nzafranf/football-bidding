@@ -1,0 +1,362 @@
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-black bg-opacity-70">
+<div class="bg-black rounded-lg shadow-lg border border-magenta-500 w-11/12 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-screen overflow-y-auto p-6">
+
+    <div class="flex items-center justify-between mb-4">
+    <h3 class="text-xl font-semibold text-white">Confirm Delete</h3>
+    <button type="button" onclick="hideDeleteModal()" class="text-magenta-400 hover:text-white rounded-lg p-1.5">✕</button>
+    </div>
+
+    <p class="text-magenta-300 mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+
+    <div class="flex justify-end gap-4">
+    <button type="button" onclick="hideDeleteModal()"
+            class="px-4 py-2 border border-magenta-500 text-magenta-300 rounded-md hover:bg-magenta-900 hover:text-white">
+        Cancel
+    </button>
+    <button type="button" onclick="confirmDelete()"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 shadow-lg shadow-red-500/50">
+        Delete
+    </button>
+    </div>
+
+</div>
+</div>
+
+<!-- Modal -->
+<div id="crudModal" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-black bg-opacity-70">
+  <div id="crudModalContent" class="bg-black rounded-lg shadow-lg border border-magenta-500 w-11/12 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-screen overflow-y-auto">
+
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b border-magenta-500">
+      <div>
+        <h3 class="text-xl font-semibold text-white">Create New Product</h3>
+        <p class="text-sm text-magenta-300 mt-1">Share your football product with the community</p>
+      </div>
+      <button type="button" onclick="hideModal()"
+              class="text-magenta-400 hover:text-white rounded-lg p-1.5">
+        ✕
+      </button>
+    </div>
+
+    <!-- Modal body -->
+    <form id="productForm" class="px-6 py-4 space-y-6">
+      {% csrf_token %}
+      <div>
+        <label for="name" class="block text-sm font-medium text-white">Name</label>
+        <input type="text" id="name" name="name" required
+               class="mt-1 block w-full bg-gray-900 border border-magenta-500 rounded-md px-3 py-2 text-white placeholder-magenta-300 focus:border-magenta-300 focus:ring-magenta-300">
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-white">Description</label>
+        <textarea id="description" name="description" rows="3" required
+                  class="mt-1 block w-full bg-gray-900 border border-magenta-500 rounded-md px-3 py-2 text-white placeholder-magenta-300 focus:border-magenta-300 focus:ring-magenta-300"></textarea>
+      </div>
+
+      <div>
+        <label for="price" class="block text-sm font-medium text-white">Price</label>
+        <input type="number" id="price" name="price" required
+               class="mt-1 block w-full bg-gray-900 border border-magenta-500 rounded-md px-3 py-2 text-white placeholder-magenta-300 focus:border-magenta-300 focus:ring-magenta-300">
+      </div>
+
+      <div>
+        <label for="category" class="block text-sm font-medium text-white">Category</label>
+        <select id="category" name="category" required
+                class="mt-1 block w-full bg-gray-900 border border-magenta-500 rounded-md px-3 py-2 text-white focus:border-magenta-300 focus:ring-magenta-300">
+          <option value="" class="bg-gray-900 text-white">Choose a category</option>
+          <option value="historic" class="bg-gray-900 text-white">Historic</option>
+          <option value="exclusive" class="bg-gray-900 text-white">Exclusive</option>
+          <option value="fan" class="bg-gray-900 text-white">Fan</option>
+          <option value="misc" class="bg-gray-900 text-white">Miscellaneous</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="thumbnail" class="block text-sm font-medium text-white">Thumbnail URL</label>
+        <input type="url" id="thumbnail" name="thumbnail"
+               class="mt-1 block w-full bg-gray-900 border border-magenta-500 rounded-md px-3 py-2 text-white placeholder-magenta-300 focus:border-magenta-300 focus:ring-magenta-300"
+               placeholder="https://example.com/image.jpg">
+      </div>
+
+      <div class="flex items-center">
+        <input id="is_featured" name="is_featured" type="checkbox"
+               class="w-4 h-4 text-magenta-500 bg-gray-900 border-magenta-500 rounded focus:ring-magenta-300">
+        <label for="is_featured" class="ml-2 text-sm text-white">Featured Product</label>
+      </div>
+    </form>
+
+    <!-- Modal footer -->
+    <div class="flex flex-col sm:flex-row gap-4 p-6 border-t border-magenta-500 rounded-b">
+      <button type="button" onclick="hideModal()"
+              class="order-2 sm:order-1 px-6 py-3 border border-magenta-500 text-magenta-300 rounded-md font-medium hover:bg-magenta-900 hover:text-white">
+        Cancel
+      </button>
+      <button type="submit" form="productForm" id="submitProduct"
+              class="order-1 sm:order-2 flex-1 bg-magenta-600 text-white px-6 py-3 rounded-md font-medium hover:bg-magenta-500 shadow-lg shadow-magenta-500/50">
+        Publish Product
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================
+   MODAL CONTROL FUNCTIONS
+========================= */
+function showModal() {
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+    modal.classList.remove('hidden');
+    // Reset to create mode
+    document.querySelector('#crudModalContent h3').textContent = 'Create New Product';
+    document.querySelector('#crudModalContent p').textContent = 'Share your football product with the community';
+    document.getElementById('submitProduct').textContent = 'Publish Product';
+    const form = document.getElementById('productForm');
+    form.reset();
+    form.onsubmit = async function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch("{% url 'main:add_product_entry_ajax' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": getCsrfToken()
+                }
+            });
+
+            const data = await response.json().catch(() => ({ success: response.ok }));
+
+            if (data.success) {
+                showToast("Product Added", "Your football gear is now live!", "success");
+                hideModal();
+                form.reset();
+                fetchProductsFromServer();
+            } else {
+                showToast("Creation Failed", data.error || "Check your inputs.", "error");
+                console.error(data.errors || data);
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Network Error", "Please try again.", "error");
+        }
+    };
+    setTimeout(() => {
+        modalContent.classList.remove('opacity-0', 'scale-95');
+        modalContent.classList.add('opacity-100', 'scale-100');
+    }, 50);
+}
+
+function hideModal() {
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+    modalContent.classList.remove('opacity-100', 'scale-100');
+    modalContent.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 150);
+}
+
+function openDeleteModal(productId) {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('hidden');
+    modal.dataset.productId = productId;
+}
+
+function hideDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    modal.dataset.productId = '';
+}
+
+/* =========================
+   AJAX HANDLERS
+========================= */
+// CSRF token helper
+function getCsrfToken() {
+    const tokenEl = document.querySelector('[name=csrfmiddlewaretoken]');
+    return tokenEl ? tokenEl.value : '';
+}
+
+// CREATE / ADD PRODUCT - now handled in showModal
+
+// DELETE PRODUCT
+async function confirmDelete() {
+    const modal = document.getElementById('deleteModal');
+    const productId = modal.dataset.productId;
+    if (!productId) return;
+
+    try {
+        const response = await fetch(`/delete-product/${productId}/ajax/`, {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCsrfToken()
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast("Product Removed", "Gear deleted from the arena!", "success");
+            hideDeleteModal();
+            fetchProductsFromServer();
+        } else {
+            showToast("Deletion Failed", data.error || "Could not delete.", "error");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Network Error", "Please try again.", "error");
+    }
+}
+
+// EDIT PRODUCT
+async function openEditModal(productId) {
+    try {
+        const response = await fetch(`/get-product/${productId}/`);
+        const product = await response.json();
+
+        showModal();
+        const form = document.getElementById('productForm');
+        form.name.value = product.name;
+        form.description.value = product.description;
+        form.price.value = product.price;
+        form.category.value = product.category;
+        form.thumbnail.value = product.thumbnail || '';
+        form.is_featured.checked = product.is_featured;
+
+        // Change header
+        document.querySelector('#crudModalContent h3').textContent = 'Edit Product';
+        document.querySelector('#crudModalContent p').textContent = 'Update your football gear details';
+        document.getElementById('submitProduct').textContent = 'Update Product';
+
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(`/edit-product/${product.product_id}/ajax/`, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": getCsrfToken()
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast("Product Updated", "Changes saved to the arena!", "success");
+                    hideModal();
+                    fetchProductsFromServer();
+                } else {
+                    showToast("Update Failed", data.error || "Check your inputs.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Network Error", "Please try again.", "error");
+            }
+        };
+    } catch (err) {
+        console.error(err);
+        showToast("Error", "Could not load product data.", "error");
+    }
+}
+
+// UPDATE FILTER STYLES
+function updateFilterStyles() {
+    const filter = document.querySelector('input[name="filter"]:checked')?.value || 'all';
+    document.querySelectorAll('input[name="filter"]').forEach(radio => {
+        const label = document.querySelector(`label[for="${radio.id}"]`);
+        if (radio.value === filter) {
+            label.classList.add('bg-magenta-600', 'text-white');
+            label.classList.remove('bg-gray-900', 'text-magenta-200', 'border', 'border-magenta-500');
+        } else {
+            label.classList.remove('bg-magenta-600', 'text-white');
+            label.classList.add('bg-gray-900', 'text-magenta-200', 'border', 'border-magenta-500');
+        }
+    });
+}
+
+// FETCH PRODUCTS FROM SERVER
+async function fetchProductsFromServer() {
+    const productGrid = document.getElementById('productGrid');
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const errorState = document.getElementById('errorState');
+    const filter = document.querySelector('input[name="filter"]:checked')?.value || 'all';
+
+    // Show loading
+    if (loadingState) loadingState.classList.remove('hidden');
+    if (productGrid) productGrid.classList.add('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
+    if (errorState) errorState.classList.add('hidden');
+
+    try {
+        const response = await fetch(`{% url 'main:get_products_json' %}?filter=${filter}`);
+        const products = await response.json();
+
+        if (loadingState) loadingState.classList.add('hidden');
+
+        if (products.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+        } else {
+            if (productGrid) {
+                productGrid.innerHTML = products.map(product => `
+                    <article class="rounded-lg overflow-hidden border transition-all duration-300 transform hover:scale-[1.02] bg-gray-900 border-magenta-500/40 hover:shadow-[0_0_18px_rgba(255,0,255,0.6)]">
+                        <div class="aspect-[16/9] relative overflow-hidden">
+                            ${product.thumbnail ? `<img src="${product.thumbnail}" alt="${product.description}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-110">` : '<div class="w-full h-full bg-gray-800"></div>'}
+                            <div class="absolute top-3 left-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-magenta-600 text-white">${product.category}</span>
+                            </div>
+                            ${product.is_featured ? '<div class="absolute top-3 right-3"><span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-400 text-black shadow-md">⭐ Featured</span></div>' : ''}
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center text-sm text-gray-400 mb-3">
+                                <span>${product.views} views</span>
+                                <span class="mx-2">•</span>
+                                <span>${product.likes} likes</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-3 line-clamp-2 leading-tight">${product.name}</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed line-clamp-3 mb-4">${product.description}</p>
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-700">
+                                <a href="/product/${product.product_id}/" class="text-magenta-400 hover:text-magenta-300 font-medium text-sm transition-colors">Read more</a>
+                                ${product.user == currentUser ? `
+                                <div class="flex space-x-3">
+                                    <button onclick="openEditModal('${product.product_id}')" class="text-gray-400 hover:text-white text-sm transition-colors">Edit</button>
+                                    <button onclick="openDeleteModal('${product.product_id}')" class="text-red-500 hover:text-red-400 text-sm transition-colors">Delete</button>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+                productGrid.classList.remove('hidden');
+            }
+        }
+        updateFilterStyles();
+    } catch (error) {
+        console.error(error);
+        if (loadingState) loadingState.classList.add('hidden');
+        if (errorState) errorState.classList.remove('hidden');
+    }
+}
+
+// REFRESH BUTTON
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.style.boxShadow = '0 0 20px #ff00ff';
+            fetchProductsFromServer().finally(() => {
+                setTimeout(() => refreshBtn.style.boxShadow = '', 500);
+            });
+        });
+    }
+    // Initial load
+    fetchProductsFromServer();
+});
+</script>

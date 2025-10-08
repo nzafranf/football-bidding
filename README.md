@@ -644,3 +644,43 @@ btn.addEventListener('click', () => menu.classList.toggle('hidden'));
 - Tombol delete hanya lewat POST dengan CSRF.
 
  **\[Naufal Zafran Fadil] - \[2406402542]**
+
+# Tugas 6: Javascript dan AJAX
+
+## Pertanyaan & Jawaban
+
+### 1. Apa perbedaan antara synchronous request dan asynchronous request?
+
+**Synchronous request** adalah permintaan yang dilakukan secara berurutan, di mana klien harus menunggu respons dari server sebelum melanjutkan ke permintaan berikutnya. Ini dapat membuat UI terblokir dan memberikan pengalaman pengguna yang kurang responsif.
+
+**Asynchronous request** memungkinkan klien mengirim permintaan dan melanjutkan eksekusi tanpa menunggu respons. Respons ditangani melalui callback atau promise, memungkinkan UI tetap responsif dan operasi paralel.
+
+### 2. Bagaimana AJAX bekerja di Django (alur request–response)?
+
+1. **Client-side**: JavaScript mengirim XMLHttpRequest atau Fetch API ke endpoint Django.
+2. **Django routing**: Request diarahkan ke view yang sesuai berdasarkan URL.
+3. **View processing**: View memproses data, berinteraksi dengan model/database, dan mengembalikan JSON response.
+4. **Client-side**: JavaScript menerima response dan memperbarui DOM tanpa reload halaman.
+
+### 3. Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?
+
+- **User Experience**: Halaman tidak perlu reload, memberikan transisi yang lebih smooth.
+- **Performance**: Mengurangi bandwidth dengan hanya mengirim data yang diperlukan.
+- **Interactivity**: Memungkinkan fitur real-time seperti autocomplete, infinite scroll.
+- **Separation of Concerns**: Frontend dan backend lebih terpisah.
+
+### 4. Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?
+
+- **CSRF Protection**: Selalu sertakan `{% csrf_token %}` dan header `X-CSRFToken` dalam request.
+- **Authentication**: Gunakan Django's authentication system untuk validasi credentials.
+- **HTTPS**: Pastikan semua komunikasi menggunakan HTTPS.
+- **Input Validation**: Validasi input di server-side menggunakan Django forms.
+- **Rate Limiting**: Implementasi rate limiting untuk mencegah brute force attacks.
+
+### 5. Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?
+
+- **Responsiveness**: UI tetap interaktif selama request berlangsung.
+- **Speed**: Operasi yang lebih cepat karena tidak ada full page reload.
+- **Feedback**: Dapat menampilkan loading states, progress indicators, dan error messages yang lebih informatif.
+- **Modern Feel**: Memberikan pengalaman yang lebih mirip aplikasi native.
+- **Accessibility**: Perlu memastikan bahwa fitur AJAX tidak mengganggu screen readers dan keyboard navigation.
