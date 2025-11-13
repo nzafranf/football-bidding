@@ -64,7 +64,18 @@
           <time datetime="{{ product.created_at|date:'c' }}">
             📅 {{ product.created_at|date:"M j, Y g:i A" }}
           </time>
-          <span>👁 {{ product.views }} views</span>
+          <!-- <span>👁 {{ product.views }} views</span> -->
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide 
+            {% if product.views < 5  %}
+              bg-white-200 text-red-500
+            {% else %}
+              bg-green-500 text-white
+            {% endif %}
+          ">
+
+            👁 {{ product.views }} views
+            <!-- {{ product.get_category_display }} -->
+          </span>
         </div>
       </div>
 
